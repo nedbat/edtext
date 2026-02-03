@@ -74,15 +74,22 @@ class Range:
 
 
 class EdText:
-    def __init__(self, lines: list[str]) -> None:
-        self.lines = lines
-
-    def __str__(self) -> str:
-        return "".join(self.lines)
+    def __init__(self, text: str, lines: list[str] | None = None) -> None:
+        self._text = text
+        if lines is not None:
+            self._lines = lines
+        else:
+            self._lines = text.splitlines(keepends=True)
 
     @classmethod
-    def text(cls, text: str) -> EdText:
-        return cls(text.splitlines(keepends=True))
+    def from_lines(cls, lines: list[str]) -> EdText:
+        return cls("".join(lines), lines=lines)
+
+    def __str__(self) -> str:
+        return self._text
+
+    def __eq__(self, other: str) -> bool:
+        return self._text == other
 
     def _resolve_addr(self, addr: Addr, start: int) -> int:
         """Return the one-based line index for the given address.
@@ -92,14 +99,14 @@ class EdText:
         if addr.number is not None:
             res = addr.number + addr.delta
         elif addr.regex is not None:
-            for num, line in enumerate(self.lines[start:], start=start + 1):
+            for num, line in enumerate(self._lines[start:], start=start + 1):
                 if re.search(addr.regex, line):
                     res = num + addr.delta
                     break
             else:
                 raise ValueError(f"Pattern not found: /{addr.regex}/")
         elif addr.last:
-            res = len(self.lines) + addr.delta
+            res = len(self._lines) + addr.delta
         else:
             if start == 0:
                 start = 1
@@ -107,6 +114,7 @@ class EdText:
         return res
 
     def _line_numbers(self, *range_exprs: str) -> list[int]:
+        """Get the list of line numbers for the given range expressions."""
         numbers = []
         start = 0
         for range_expr in range_exprs:
@@ -127,7 +135,10 @@ class EdText:
         return numbers
 
     def ranges(self, *range_exprs: str) -> EdText:
-        return EdText([self.lines[i] for i in self._line_numbers(*range_exprs)])
+        """Make a new EdText with the lines selected by the given ranges."""
+        return EdText.from_lines(
+            [self._lines[i] for i in self._line_numbers(*range_exprs)]
+        )
 
     range = ranges
 

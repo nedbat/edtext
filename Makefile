@@ -13,7 +13,7 @@ clean:		## Remove stuff we don't need.
 	rm -fr build/ dist/ src/*.egg-info
 
 install:	## Install the development tools.
-	uv pip install '.[dev]'
+	uv pip install -e '.[dev]'
 
 test:		## Run the test suite.
 	coverage run --branch -m pytest
