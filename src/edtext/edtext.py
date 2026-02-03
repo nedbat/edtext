@@ -52,7 +52,7 @@ class Addr:
 
 @dataclass
 class Range:
-    """A range of lines specified by one or two addresses."""
+    """An expression for a range of lines specified by one or two addresses."""
 
     start: Addr
     end: Addr | None = None
@@ -74,6 +74,8 @@ class Range:
 
 
 class EdText:
+    """A string-like object that supports ed-like line addressing."""
+
     def __init__(self, text: str, lines: list[str] | None = None) -> None:
         self._text = text
         if lines is not None:
