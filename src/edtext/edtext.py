@@ -168,3 +168,8 @@ class EdText:
         if isinstance(key, str):
             key = (key,)
         return self.ranges(*key)
+
+    def sub(self, pattern: str, repl: str) -> EdText:
+        """Return a new EdText with `pattern` replaced by `repl`."""
+        new_lines = [re.sub(pattern, repl, line) for line in self._lines]
+        return EdText.from_lines(new_lines)

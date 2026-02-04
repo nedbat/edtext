@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from contextlib import nullcontext as produces
 
 import pytest
@@ -173,3 +174,29 @@ def test_range(range, result):
 def test_ranges(ranges, result):
     with result as expected_text:
         assert EdText(ten_lines)[*ranges] == expected_text
+
+
+@pytest.mark.parametrize(
+    "pattern, repl, range, result",
+    [
+        (r"line", r"LINE", "2,3", produces("LINE 2\nLINE 3\n")),
+        (r"l[aeiou]ne \d", r"lXne", "2,3", produces("lXne\nlXne\n")),
+        (r"l[aeiou]ne (\d)", r"lXne\1\1", "2,3", produces("lXne22\nlXne33\n")),
+        (r"hello", r"bye", "2,3", produces("line 2\nline 3\n")),
+        (
+            r"hi[",
+            r"bye",
+            "2,3",
+            raises(re.PatternError, match=r"unterminated character set"),
+        ),
+        (
+            r"hi",
+            r"bye\3",
+            "2,3",
+            raises(re.PatternError, match=r"invalid group reference"),
+        ),
+    ],
+)
+def test_sub(pattern, repl, range, result):
+    with result as expected:
+        assert EdText(ten_lines).sub(pattern, repl)[range] == expected
