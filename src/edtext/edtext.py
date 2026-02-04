@@ -69,6 +69,8 @@ class Range:
 
     @classmethod
     def parse(cls, expr: str) -> Range:
+        if expr == "%":
+            expr = "1,$"
         start, rest = Addr.parse(expr)
         r = Range(start=start)
         if not rest:
@@ -169,7 +171,7 @@ class EdText:
             key = (key,)
         return self.ranges(*key)
 
-    def sub(self, pattern: str, repl: str, range: str = "1,$") -> EdText:
+    def sub(self, range: str, pattern: str, repl: str) -> EdText:
         """Return a new EdText with `pattern` replaced by `repl` on lines selected by `range`."""
         sub_nums = set(self._line_numbers(range))
         new_lines = [

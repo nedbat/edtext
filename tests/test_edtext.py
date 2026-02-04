@@ -199,7 +199,7 @@ def test_ranges(ranges, result):
 )
 def test_sub(pattern, repl, range, result):
     with result as expected:
-        assert EdText(ten_lines).sub(pattern, repl)[range] == expected
+        assert EdText(ten_lines).sub("%", pattern, repl)[range] == expected
 
 
 @pytest.mark.parametrize(
@@ -211,4 +211,4 @@ def test_sub(pattern, repl, range, result):
 )
 def test_sub_range(pattern, repl, sub_range, select_range, result):
     with result as expected:
-        assert EdText(ten_lines).sub(pattern, repl, sub_range)[select_range] == expected
+        assert EdText(ten_lines).sub(sub_range, pattern, repl)[select_range] == expected
