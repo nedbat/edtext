@@ -125,6 +125,12 @@ ten_lines = "\n".join(f"line {i + 1}" for i in range(10)) + "\n"
             "/5/,/3/",
             raises(ValueError, match="Invalid range: start 5 > end 3"),
         ),
+        ("20,25", raises(ValueError, match=r"Address 20 outside of range 1-10")),
+        (
+            "/line 2/-----,4",
+            raises(ValueError, match=r"Address -3 outside of range 1-10"),
+        ),
+        ("/line 1/-,4", raises(ValueError, match=r"Address 0 outside of range 1-10")),
     ],
 )
 def test_range(range, result):

@@ -126,6 +126,8 @@ class EdText:
             if start == 0:
                 start = 1
             res = start + addr.delta
+        if res < 1 or res > len(self._lines):
+            raise ValueError(f"Address {res} outside of range 1-{len(self._lines)}")
         return res
 
     def _line_numbers(self, *range_exprs: str) -> list[int]:
@@ -151,7 +153,7 @@ class EdText:
     def ranges(self, *range_exprs: str) -> EdText:
         """Make a new EdText with the lines selected by the given ranges."""
         return EdText.from_lines(
-            [self._lines[i] for i in self._line_numbers(*range_exprs)]
+            [self._lines[n] for n in self._line_numbers(*range_exprs)]
         )
 
     range = ranges
