@@ -29,11 +29,14 @@ def test_eq():
     [
         ("10", produces(Addr(number=10))),
         ("/pattern/", produces(Addr(regex="pattern"))),
+        ("  /pattern/", produces(Addr(regex="pattern"))),
         ("/pattern", produces(Addr(regex="pattern"))),
         ("/pattern/+12", produces(Addr(regex="pattern", delta=12))),
+        ("/pattern/ + 12", produces(Addr(regex="pattern", delta=12))),
         ("/pattern/+12--", produces(Addr(regex="pattern", delta=12))),
         ("/pattern/+", produces(Addr(regex="pattern", delta=1))),
         ("/pattern/++++", produces(Addr(regex="pattern", delta=4))),
+        ("/pattern/+ +   ++ ", produces(Addr(regex="pattern", delta=4))),
         ("/pattern/---", produces(Addr(regex="pattern", delta=-3))),
         (
             "/pattern/-+-",
@@ -69,7 +72,7 @@ def test_parse_address(expr, result):
             produces(Range(start=Addr(number=10), end=Addr(number=20), from0=False)),
         ),
         (
-            "/start/++;/end/-2",
+            "/start/++; /end/ - 2",
             produces(
                 Range(
                     start=Addr(regex="start", delta=2),
@@ -107,8 +110,10 @@ ten_lines = "\n".join(f"line {i + 1}" for i in range(10)) + "\n"
         ("5,/7/-", produces("line 5\nline 6\n")),
         ("5;++", produces("line 5\nline 6\nline 7\n")),
         ("5;.+2", produces("line 5\nline 6\nline 7\n")),
+        (".;.+2", produces("line 1\nline 2\nline 3\n")),
         ("5,++", raises(ValueError, match=r"Invalid range: '5,\+\+'")),
         ("5;/line [456]/", produces("line 5\nline 6\n")),
+        (" 5 ; /line [456]/ ", produces("line 5\nline 6\n")),
         ("$-2,$", produces("line 8\nline 9\nline 10\n")),
         (
             "/5/--,7",

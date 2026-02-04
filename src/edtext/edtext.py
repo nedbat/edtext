@@ -18,6 +18,7 @@ class Addr:
         m = re.match(
             r"""(?x)
             ^
+            \s*                         # optional whitespace
             (?:
                 (?P<number>\d+)         # line number
                 |
@@ -27,10 +28,11 @@ class Addr:
                 |
                 \.                      # current line
             )?
+            \s*                         # optional whitespace
             (?:
-                (?P<delta>[+-]?\d+)     # optional numeric delta
+                (?P<delta>[+-]?\s*\d+)  # optional numeric delta
                 |
-                (?P<plus>[+-]+)         # optional plus/minus delta
+                (?P<plus>[ +-]+)        # optional plus/minus delta
             )?
             """,
             expr,
@@ -44,11 +46,12 @@ class Addr:
         elif m["last"] is not None:
             addr.last = True
         if m["delta"] is not None:
-            addr.delta = int(m["delta"])
+            addr.delta = int(m["delta"].replace(" ", ""))
         elif m["plus"] is not None:
-            if len(set(m["plus"])) != 1:
+            plus = m["plus"].replace(" ", "")
+            if len(set(plus)) != 1:
                 raise ValueError(f"Invalid address delta: {expr!r}")
-            addr.delta = len(m["plus"]) * (1 if m["plus"][0] == "+" else -1)
+            addr.delta = len(plus) * (1 if plus[0] == "+" else -1)
         return addr, expr[m.end() :]
 
     def is_relative(self) -> bool:
