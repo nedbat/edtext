@@ -24,6 +24,8 @@ class Addr:
                 (?P<regex>/[^/]+?(/|$)) # regex
                 |
                 (?P<last>\$)            # last line
+                |
+                \.                      # current line
             )?
             (?:
                 (?P<delta>[+-]?\d+)     # optional numeric delta
@@ -48,6 +50,10 @@ class Addr:
                 raise ValueError(f"Invalid address delta: {expr!r}")
             addr.delta = len(m["plus"]) * (1 if m["plus"][0] == "+" else -1)
         return addr, expr[m.end() :]
+
+    def is_relative(self) -> bool:
+        """Return True if this address is relative (no number, regex, or last)."""
+        return self.number is None and self.regex is None and not self.last
 
 
 @dataclass
@@ -130,9 +136,8 @@ class EdText:
                 end_idx = start_idx
             else:
                 start = 1 if r.from0 else start_idx
-                if r.end.number is None and r.end.regex is None and not r.end.last:
-                    if r.from0 is True:
-                        raise ValueError(f"Invalid range: {range_expr!r}")
+                if r.end.is_relative() and r.from0:
+                    raise ValueError(f"Invalid range: {range_expr!r}")
                 end_idx = self._resolve_addr(r.end, start=start)
             if start_idx > end_idx:
                 raise ValueError(f"Invalid range: start {start_idx} > end {end_idx}")

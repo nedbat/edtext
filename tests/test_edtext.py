@@ -106,6 +106,7 @@ ten_lines = "\n".join(f"line {i + 1}" for i in range(10)) + "\n"
         ("/5/+,7", produces("line 6\nline 7\n")),
         ("5,/7/-", produces("line 5\nline 6\n")),
         ("5;++", produces("line 5\nline 6\nline 7\n")),
+        ("5;.+2", produces("line 5\nline 6\nline 7\n")),
         ("5,++", raises(ValueError, match=r"Invalid range: '5,\+\+'")),
         ("5;/line [456]/", produces("line 5\nline 6\n")),
         ("$-2,$", produces("line 8\nline 9\nline 10\n")),
