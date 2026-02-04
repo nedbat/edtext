@@ -99,6 +99,12 @@ class EdText:
     def __str__(self) -> str:
         return self._text
 
+    def __repr__(self) -> str:
+        text = self._text
+        if len(text) > 40:
+            text = text[:37] + "..."
+        return f"EdText({text!r}, {len(self._lines)} lines)"
+
     def __eq__(self, other: object) -> bool:
         if isinstance(other, EdText):
             return self._text == other._text

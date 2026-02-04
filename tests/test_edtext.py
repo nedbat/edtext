@@ -9,12 +9,23 @@ from edtext import EdText
 from edtext.edtext import Addr, Range
 
 
+ten_lines = "\n".join(f"line {i + 1}" for i in range(10)) + "\n"
+
+
 def test_text():
     assert EdText("line1\nline2\n") == "line1\nline2\n"
 
 
 def test_str():
     assert str(EdText("line1\nline2\n")) == "line1\nline2\n"
+
+
+def test_repr():
+    assert repr(EdText("line1\nline2\n")) == "EdText('line1\\nline2\\n', 2 lines)"
+    assert (
+        repr(EdText(ten_lines))
+        == "EdText('line 1\\nline 2\\nline 3\\nline 4\\nline 5\\nli...', 10 lines)"
+    )
 
 
 def test_eq():
@@ -91,9 +102,6 @@ def test_parse_address(expr, result):
 def test_parse_range(expr, result):
     with result as expected:
         assert Range.parse(expr) == expected
-
-
-ten_lines = "\n".join(f"line {i + 1}" for i in range(10)) + "\n"
 
 
 @pytest.mark.parametrize(
