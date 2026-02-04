@@ -18,3 +18,6 @@ install:	## Install the development tools.
 test:		## Run the test suite.
 	coverage run --branch -m pytest
 	coverage report -m
+
+ty:		## Check types with ty.
+	ty check src/edtext/*.py tests/*.py

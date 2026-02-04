@@ -90,8 +90,12 @@ class EdText:
     def __str__(self) -> str:
         return self._text
 
-    def __eq__(self, other: str) -> bool:
-        return self._text == other
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, EdText):
+            return self._text == other._text
+        if isinstance(other, str):
+            return self._text == other
+        return NotImplemented
 
     def _resolve_addr(self, addr: Addr, start: int) -> int:
         """Return the one-based line index for the given address.
@@ -146,5 +150,5 @@ class EdText:
 
     def __getitem__(self, key: str | tuple[str, ...]) -> EdText:
         if isinstance(key, str):
-            key = [key]
+            key = (key,)
         return self.ranges(*key)

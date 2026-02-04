@@ -17,6 +17,13 @@ def test_str():
     assert str(EdText("line1\nline2\n")) == "line1\nline2\n"
 
 
+def test_eq():
+    assert EdText("line1\n") == EdText("line1\n")
+    assert EdText("line1\n") != EdText("line2\n")
+    assert EdText("line1\n") == "line1\n"
+    assert EdText("line1\n") != 3.14159  # NotImplemented makes it false.
+
+
 @pytest.mark.parametrize(
     "expr, result",
     [
