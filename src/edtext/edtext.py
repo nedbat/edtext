@@ -88,16 +88,17 @@ class Range:
 class EdText:
     """A string-like object that supports ed-like line addressing."""
 
-    def __init__(self, text: str, lines: list[str] | None = None) -> None:
+    def __init__(self, text: str, *, _lines: list[str] | None = None) -> None:
         self._text = text
-        if lines is not None:
-            self._lines = lines
+        if _lines is not None:
+            self._lines = _lines
         else:
             self._lines = text.splitlines(keepends=True)
 
     @classmethod
-    def from_lines(cls, lines: list[str]) -> EdText:
-        return cls("".join(lines), lines=lines)
+    def from_lines(cls, lines: Iterable[str]) -> EdText:
+        _lines = list(lines)
+        return cls("".join(_lines), _lines=_lines)
 
     def __str__(self) -> str:
         return self._text
@@ -175,7 +176,7 @@ class EdText:
     def ranges(self, *range_exprs: str) -> EdText:
         """Make a new EdText with the lines selected by the given ranges."""
         return EdText.from_lines(
-            [self._lines[n] for n in self._line_numbers(*range_exprs)]
+            self._lines[n] for n in self._line_numbers(*range_exprs)
         )
 
     range = ranges
@@ -188,8 +189,8 @@ class EdText:
     def sub(self, range: str, pattern: str, repl: str) -> EdText:
         """Return a new EdText with `pattern` replaced by `repl` on lines selected by `range`."""
         sub_nums = set(self._line_numbers(range))
-        new_lines = [
+        new_lines = (
             (re.sub(pattern, repl, line) if num in sub_nums else line)
             for num, line in enumerate(self._lines)
-        ]
+        )
         return EdText.from_lines(new_lines)
