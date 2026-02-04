@@ -137,7 +137,7 @@ class EdText:
         return res
 
     def _line_numbers(self, *range_exprs: str) -> list[int]:
-        """Get the list of line numbers for the given range expressions."""
+        """Get the list of zero-based line numbers for the given range expressions."""
         numbers = []
         start = 0
         for range_expr in range_exprs:
@@ -169,7 +169,11 @@ class EdText:
             key = (key,)
         return self.ranges(*key)
 
-    def sub(self, pattern: str, repl: str) -> EdText:
-        """Return a new EdText with `pattern` replaced by `repl`."""
-        new_lines = [re.sub(pattern, repl, line) for line in self._lines]
+    def sub(self, pattern: str, repl: str, range: str = "1,$") -> EdText:
+        """Return a new EdText with `pattern` replaced by `repl` on lines selected by `range`."""
+        sub_nums = set(self._line_numbers(range))
+        new_lines = [
+            (re.sub(pattern, repl, line) if num in sub_nums else line)
+            for num, line in enumerate(self._lines)
+        ]
         return EdText.from_lines(new_lines)

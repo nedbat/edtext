@@ -187,16 +187,28 @@ def test_ranges(ranges, result):
             r"hi[",
             r"bye",
             "2,3",
-            raises(re.PatternError, match=r"unterminated character set"),
+            raises(re.error, match=r"unterminated character set"),
         ),
         (
             r"hi",
             r"bye\3",
             "2,3",
-            raises(re.PatternError, match=r"invalid group reference"),
+            raises(re.error, match=r"invalid group reference"),
         ),
     ],
 )
 def test_sub(pattern, repl, range, result):
     with result as expected:
         assert EdText(ten_lines).sub(pattern, repl)[range] == expected
+
+
+@pytest.mark.parametrize(
+    "pattern, repl, sub_range, select_range, result",
+    [
+        (r"line", r"LINE", "3,4", "1,3", produces("line 1\nline 2\nLINE 3\n")),
+        (r"l[aeiou]ne \d", r"lXne", "/6/;+", "7,8", produces("lXne\nline 8\n")),
+    ],
+)
+def test_sub_range(pattern, repl, sub_range, select_range, result):
+    with result as expected:
+        assert EdText(ten_lines).sub(pattern, repl, sub_range)[select_range] == expected
