@@ -203,12 +203,29 @@ def test_sub(pattern, repl, range, result):
 
 
 @pytest.mark.parametrize(
-    "pattern, repl, sub_range, select_range, result",
+    "sub_range, pattern, repl, select_range, result",
     [
-        (r"line", r"LINE", "3,4", "1,3", produces("line 1\nline 2\nLINE 3\n")),
-        (r"l[aeiou]ne \d", r"lXne", "/6/;+", "7,8", produces("lXne\nline 8\n")),
+        ("3, 4", r"line", r"LINE", "1,3", produces("line 1\nline 2\nLINE 3\n")),
+        ("/6/;+", r"l[aeiou]ne \d", r"lXne", "7,8", produces("lXne\nline 8\n")),
+        ("/line", r"l[aeiou]ne \d", r"lXne", "1,3", produces("lXne\nline 2\nline 3\n")),
+        ("g/line", r"l[aeiou]ne \d", r"lXne", "1,3", produces("lXne\nlXne\nlXne\n")),
+        ("g/line/", r"l[aeiou]ne \d", r"lXne", "1,3", produces("lXne\nlXne\nlXne\n")),
+        (
+            "g23",
+            r"x",
+            r"",
+            "1",
+            raises(ValueError, match=r"Invalid global range: 'g23'"),
+        ),
+        (
+            "g/line/+",
+            r"x",
+            r"",
+            "1",
+            raises(ValueError, match=r"Invalid global range: 'g/line/\+'"),
+        ),
     ],
 )
-def test_sub_range(pattern, repl, sub_range, select_range, result):
+def test_sub_range(sub_range, pattern, repl, select_range, result):
     with result as expected:
         assert EdText(ten_lines).sub(sub_range, pattern, repl)[select_range] == expected

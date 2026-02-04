@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from typing import Iterable
 
 
 @dataclass
@@ -138,11 +139,17 @@ class EdText:
             raise ValueError(f"Address {res} outside of range 1-{len(self._lines)}")
         return res
 
-    def _line_numbers(self, *range_exprs: str) -> list[int]:
-        """Get the list of zero-based line numbers for the given range expressions."""
-        numbers = []
-        start = 0
-        for range_expr in range_exprs:
+    def _range_line_numbers(self, range_expr: str, start: int) -> Iterable[int]:
+        if range_expr[0] == "g":
+            gr = Range.parse(range_expr[1:])
+            if gr.start.regex is None or gr.start.delta or gr.end is not None:
+                raise ValueError(f"Invalid global range: {range_expr!r}")
+            yield from (
+                num
+                for num, line in enumerate(self._lines)
+                if re.search(gr.start.regex, line)
+            )
+        else:
             r = Range.parse(range_expr)
             start_idx = self._resolve_addr(r.start, start=start)
             if r.end is None:
@@ -154,8 +161,15 @@ class EdText:
                 end_idx = self._resolve_addr(r.end, start=start)
             if start_idx > end_idx:
                 raise ValueError(f"Invalid range: start {start_idx} > end {end_idx}")
-            numbers.extend(range(start_idx - 1, end_idx))
-            start = end_idx
+            yield from range(start_idx - 1, end_idx)
+
+    def _line_numbers(self, *range_exprs: str) -> list[int]:
+        """Get the list of zero-based line numbers for the given range expressions."""
+        numbers = []
+        start = 0
+        for range_expr in range_exprs:
+            numbers.extend(self._range_line_numbers(range_expr, start))
+            start = numbers[-1] + 1
         return numbers
 
     def ranges(self, *range_exprs: str) -> EdText:
