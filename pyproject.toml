@@ -26,6 +26,7 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
+    "cogapp",
     "coverage",
     "pytest",
     "ty",

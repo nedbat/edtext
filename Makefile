@@ -1,6 +1,6 @@
 # Makefile for edtext.
 
-.PHONY: help clean tools
+.PHONY: help clean install test ty readme
 
 .DEFAULT_GOAL := help
 
@@ -21,3 +21,6 @@ test:		## Run the test suite.
 
 ty:		## Check types with ty.
 	ty check src/edtext/*.py tests/*.py
+
+readme:		## Build the README.rst
+	cog -crP README.rst
