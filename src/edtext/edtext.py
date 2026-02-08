@@ -170,7 +170,8 @@ class EdText:
         start = 0
         for range_expr in range_exprs:
             numbers.extend(self._range_line_numbers(range_expr, start))
-            start = numbers[-1] + 1
+            if numbers:
+                start = numbers[-1] + 1
         return numbers
 
     def ranges(self, *range_exprs: str) -> EdText:

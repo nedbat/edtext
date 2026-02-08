@@ -167,6 +167,10 @@ def test_range(range, result):
                 + "might live. It is altogether fitting and proper that we should\n"
             ),
         ),
+        (
+            "g/xyz",
+            produces(""),
+        ),
     ],
 )
 def test_getty_range(range, result):

@@ -111,6 +111,9 @@ You can use a number of address ranges to select a more than one range at once:
 The ``/Four/;+2`` means the line matching "Four" then two more lines. ``$``
 means the last line.
 
+With multiple address ranges, each range starts from where the previous range
+ended.
+
 Although we are using strings to determine line numbers, this feels like
 slicing, so square bracket slicing does the same thing as ``range()``:
 
