@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from contextlib import nullcontext as produces
+from pathlib import Path
 
 import pytest
 from pytest import raises
@@ -11,6 +12,7 @@ from edtext.edtext import Addr, Range
 
 
 ten_lines = "\n".join(f"line {i + 1}" for i in range(10)) + "\n"
+getty = Path("tests/gettysburg.txt").read_text()
 
 
 def test_text():
@@ -145,6 +147,31 @@ def test_parse_range(expr, result):
 def test_range(range, result):
     with result as expected_text:
         assert EdText(ten_lines)[range] == expected_text
+
+
+@pytest.mark.parametrize(
+    "range, result",
+    [
+        (
+            # Only finds the first line matching /and/
+            "/and/",
+            produces("Four score and seven years ago our fathers brought forth\n"),
+        ),
+        (
+            # Finds all the lines matching /and/
+            "g/and/",
+            produces(
+                "Four score and seven years ago our fathers brought forth\n"
+                + "on this continent, a new nation, conceived in Liberty, and\n"
+                + "nation, or any nation so conceived and so dedicated, can long\n"
+                + "might live. It is altogether fitting and proper that we should\n"
+            ),
+        ),
+    ],
+)
+def test_getty_range(range, result):
+    with result as expected_text:
+        assert EdText(getty)[range] == expected_text
 
 
 @pytest.mark.parametrize(
