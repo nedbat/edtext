@@ -1,10 +1,18 @@
-EdText — ed-like text selection
-===============================
+##############################
+EdText: ed-like text selection
+##############################
 
 This library provides an ``EdText`` class for selecting and manipulating lines
-of text from a string, using addressing inspired by the classic `ed text editor`__.
+of text from a string, using addressing inspired by the classic `ed text editor
+<ed_>`_.
 
-__ https://www.gnu.org/software/ed/manual/ed_manual.html#Line-addressing
+This isn't on PyPI yet, if you want to use it, install it from GitHub::
+
+    python -m pip install git+https://github.com/nedbat/edtext
+
+
+How it works
+============
 
 ..  [[[cog
 ..      from pathlib import Path
@@ -186,3 +194,27 @@ manipulations or selections.
     might live. It is altogether fitting and proper that we should
 
 .. [[[end]]] (sum: lQeAfoNG9u)
+
+
+Why?
+====
+
+I use `cog`_ to interpolate text files or code exection output into
+documentation, presentations and the like. I often want only a subset of the
+lines. Over the years I'd built a utility function to make the selection in
+various ways. It had become baroque, confusing, and cumbersome; and still
+didn't do everything I wanted. I realized that `ed`_ already had the language I
+needed for selecting and manipulating text. edtext was born.
+
+
+Changelog
+=========
+
+v0.5.0 – 2026-02-08
+-------------------
+
+First version.
+
+
+.. _ed: https://www.gnu.org/software/ed/manual/ed_manual.html#Line-addressing
+.. _cog: https://cog.readthedocs.io
