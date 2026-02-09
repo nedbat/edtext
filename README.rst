@@ -206,6 +206,10 @@ various ways. It had become baroque, confusing, and cumbersome; and still
 didn't do everything I wanted. I realized that `ed`_ already had the language I
 needed for selecting and manipulating text. edtext was born.
 
+For more back-story, see my `EdText blog post`__.
+
+__ https://nedbatchelder.com/blog/202602/edtext
+
 
 Changelog
 =========
